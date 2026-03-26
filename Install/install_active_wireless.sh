@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
-# TMV Active Wireless Testing Toolkit
-# Tengu Marauder Vanguard — Workshop SD Card Image
+# TMS Active Wireless Testing Toolkit
+# Tengu Marauder Stryker — Workshop SD Card Image
 #
 # Installs tools used for AUTHORIZED penetration testing and workshop demos.
 #
@@ -16,7 +16,7 @@
 # =============================================================================
 set -euo pipefail
 
-LOG_FILE="/var/log/tmv_active_wireless_install.log"
+LOG_FILE="/var/log/tms_active_wireless_install.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 export DEBIAN_FRONTEND=noninteractive
@@ -28,7 +28,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 echo "============================================="
-echo " TMV Active Wireless Toolkit — Install"
+echo " TMS Active Wireless Toolkit — Install"
 echo " AUTHORIZED USE ONLY"
 echo "============================================="
 echo "[*] Log: $LOG_FILE"
@@ -93,8 +93,8 @@ apt-get install -y --no-install-recommends bettercap || {
 echo "[*] Installing Wifite2..."
 apt-get install -y --no-install-recommends wifite || {
     echo "[~] wifite not in apt — cloning from source..."
-    git clone --depth=1 https://github.com/derv82/wifite2.git /opt/tmv/tools/wifite2 && \
-        ln -sf /opt/tmv/tools/wifite2/Wifite.py /usr/local/bin/wifite2 || \
+    git clone --depth=1 https://github.com/derv82/wifite2.git /opt/tms/tools/wifite2 && \
+        ln -sf /opt/tms/tools/wifite2/Wifite.py /usr/local/bin/wifite2 || \
         echo "[!] Wifite2 source install failed"
 }
 
@@ -109,7 +109,7 @@ echo "    Install manually if needed: pip3 install btlejack"
 # ── EAPHammer — enterprise Wi-Fi testing (source install) ────────────────────
 echo "[~] EAPHammer (enterprise Wi-Fi) is not in apt."
 echo "    For authorized enterprise testing, clone manually:"
-echo "    git clone https://github.com/s0lst1c3/eaphammer /opt/tmv/tools/eaphammer"
+echo "    git clone https://github.com/s0lst1c3/eaphammer /opt/tms/tools/eaphammer"
 
 # ── Clean up ──────────────────────────────────────────────────────────────────
 echo "[*] Cleaning up..."
@@ -117,18 +117,18 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 # ── Create tool directories ───────────────────────────────────────────────────
-mkdir -p /opt/tmv/tools
-mkdir -p /opt/tmv/pcaps/"$(date +%F)"
-mkdir -p /opt/tmv/logs/"$(date +%F)"
+mkdir -p /opt/tms/tools
+mkdir -p /opt/tms/pcaps/"$(date +%F)"
+mkdir -p /opt/tms/logs/"$(date +%F)"
 
 # ── Package manifest ──────────────────────────────────────────────────────────
 dpkg-query -W -f='${binary:Package}\t${Version}\n' | sort \
-    > /opt/tmv/reports/active-wireless-packages.tsv
+    > /opt/tms/reports/active-wireless-packages.tsv
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo
 echo "============================================="
-echo " TMV Active Wireless Toolkit — DONE"
+echo " TMS Active Wireless Toolkit — DONE"
 echo " AUTHORIZED USE ONLY"
 echo "============================================="
 echo "[+] Log: $LOG_FILE"

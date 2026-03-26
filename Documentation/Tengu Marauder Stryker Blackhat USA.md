@@ -1,7 +1,7 @@
 
 ## System Background
 
-The **Tengu Marauder Vanguard** is a mobile robotics platform powered by a raspberry pi 4 and an **ESP32** or similar controller, integrated with Python (Flask) and can be controlled via serial or the new web interface. It is designed for field testing, network operations, and educational use in cybersecurity and robotics.
+The **Tengu Marauder Stryker** is a mobile robotics platform powered by a raspberry pi 4 and an **ESP32** or similar controller, integrated with Python (Flask) and can be controlled via serial or the new web interface. It is designed for field testing, network operations, and educational use in cybersecurity and robotics.
 
 - **Controller:** Raspberry Pi 4 (or equivalent)
 - **Motor Driver:** SunFounder Robot HAT or equivalent (PWM + GPIO pins)
@@ -34,20 +34,20 @@ def stop():     motor_right.speed(0)     motor_left.speed(0)
 For the sake of this demo a pre-set script has been created to run on the robots. There may be some mismatched voltages that may result in the wheels turning in opposite directions. This can be easily rectified from updated the PWN lines in the python code. 
 
 ```bash 
-sudo python3 Tengu-Marauder-Vanguard/Tests/motorcontrolv2.py
+sudo python3 Tengu-Marauder-Stryker/Tests/motorcontrolv2.py
 ```
 
 ## Web Interface Control
 
 The web interface routes like `/motor/forward`, `/motor/left`, etc., call the corresponding Python functions. You can control the robot using buttons on the Flask-based control panel.
 
-To start your Flask-based **web interface** (like the one powering Tengu Marauder Vanguard) using a **Python virtual environment (venv)**, follow these steps:
+To start your Flask-based **web interface** (like the one powering Tengu Marauder Stryker) using a **Python virtual environment (venv)**, follow these steps:
 
 ---
 
 ### Step-by-Step: Start Flask Web Interface with `venv`
 
-### 1. Navigate to your project folder cd ~/Desktop/Tengu-Marauder-Vanguard  
+### 1. Navigate to your project folder cd ~/Desktop/Tengu-Marauder-Stryker  
 
 ### 2. Activate the virtual environment source venv/bin/activate`
 

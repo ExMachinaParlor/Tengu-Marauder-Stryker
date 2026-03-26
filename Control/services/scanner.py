@@ -303,7 +303,7 @@ class ScannerService:
         dev_path = f"/dev/{adapter}"
         if not os.path.exists(dev_path):
             self._bluetooth.set_error(
-                f"{dev_path} not found — plug in a Bluetooth adapter and restart tmv-start.sh"
+                f"{dev_path} not found — plug in a Bluetooth adapter and restart tms-start.sh"
             )
             return
 

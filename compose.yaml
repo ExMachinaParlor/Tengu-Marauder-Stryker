@@ -1,12 +1,12 @@
-name: tengu-marauder-vanguard
+name: tengu-marauder-stryker
 
 services:
-  tmv:
+  tms:
     build:
       context: .
       dockerfile: Dockerfile
-    image: exmachinaparlor/tengu-marauder-vanguard:local
-    container_name: tengu-marauder-vanguard
+    image: exmachinaparlor/tengu-marauder-stryker:local
+    container_name: tengu-marauder-stryker
     init: true
     restart: unless-stopped
 
@@ -25,10 +25,10 @@ services:
     # To revert to non-root, change to: user: "10001:10001"
     user: "0:0"
 
-    # Device mappings are injected at runtime by tmv-start.sh, which checks
+    # Device mappings are injected at runtime by tms-start.sh, which checks
     # which devices are actually present before starting the container.
     # Running `docker compose up` directly works but maps no hardware.
-    # Use ./tmv-start.sh for full hardware access.
+    # Use ./tms-start.sh for full hardware access.
 
     # Add host device groups so the non-root user can access hardware.
     # Find correct GIDs on the Pi with: getent group video dialout i2c gpio bluetooth

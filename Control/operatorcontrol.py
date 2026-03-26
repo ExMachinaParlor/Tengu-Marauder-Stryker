@@ -1,5 +1,5 @@
 """
-Tengu Marauder Vanguard — Operator Control
+Tengu Marauder Stryker — Operator Control
 
 Flask application entry point. All hardware access goes through services;
 this file contains only routing and HTTP concerns.

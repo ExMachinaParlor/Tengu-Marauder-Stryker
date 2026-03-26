@@ -1,4 +1,4 @@
-/* TMV Operator Console — vanilla JS, no dependencies */
+/* TMS Operator Console — vanilla JS, no dependencies */
 'use strict';
 
 // ── Drive control ────────────────────────────────────────────────────────────

@@ -1,9 +1,9 @@
 
-# Tengu Marauder Vanguard — Women in Cybersecurity 2026
+# Tengu Marauder Stryker — Women in Cybersecurity 2026
 
 ## System Background
 
-The **Tengu Marauder Vanguard** is a mobile cyber-physical platform powered by a **Raspberry Pi 4** and an **ESP32 Marauder**, integrated with Python (Flask) and deployed as a Docker container. It is designed for field testing, network operations, and educational use in cybersecurity and robotics.
+The **Tengu Marauder Stryker** is a mobile cyber-physical platform powered by a **Raspberry Pi 4** and an **ESP32 Marauder**, integrated with Python (Flask) and deployed as a Docker container. It is designed for field testing, network operations, and educational use in cybersecurity and robotics.
 
 - **Controller:** Raspberry Pi 4
 - **Motor Driver:** SunFounder Robot HAT (PWM + GPIO)
@@ -41,8 +41,8 @@ The console has five panels:
 ### 1. Clone the repo (first time only)
 
 ```bash
-git clone https://github.com/ExMachinaParlor/Tengu-Marauder-Vanguard.git
-cd Tengu-Marauder-Vanguard
+git clone https://github.com/ExMachinaParlor/Tengu-Marauder-Stryker.git
+cd Tengu-Marauder-Stryker
 ```
 
 ### 2. Run host permissions script (first time only)
@@ -58,8 +58,8 @@ Then **log out and back in** (or reboot) for group membership to take effect.
 ### 3. Start the container
 
 ```bash
-chmod +x tmv-start.sh
-./tmv-start.sh
+chmod +x tms-start.sh
+./tms-start.sh
 ```
 
 The startup script auto-detects connected hardware (camera, ESP32, GPIO, I2C) and only maps present devices into the container — so it starts cleanly regardless of what's plugged in.
@@ -67,10 +67,10 @@ The startup script auto-detects connected hardware (camera, ESP32, GPIO, I2C) an
 ### Common commands
 
 ```bash
-./tmv-start.sh             # start (detached)
-./tmv-start.sh --logs      # start and follow logs
-./tmv-start.sh --stop      # stop the container
-./tmv-start.sh --rebuild   # rebuild image then start (use after code updates)
+./tms-start.sh             # start (detached)
+./tms-start.sh --logs      # start and follow logs
+./tms-start.sh --stop      # stop the container
+./tms-start.sh --rebuild   # rebuild image then start (use after code updates)
 ```
 
 ---
@@ -256,7 +256,7 @@ reboot
 - Practice command chaining in the CLI
 - Explore the Recon panel — try a port scan on a lab target
 - Review the full [ESP32 Marauder CLI reference](https://github.com/justcallmekoko/ESP32Marauder/wiki/cli)
-- Pull the latest code: `git pull && ./tmv-start.sh --rebuild`
+- Pull the latest code: `git pull && ./tms-start.sh --rebuild`
 
 ---
 

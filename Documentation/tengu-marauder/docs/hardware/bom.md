@@ -1,6 +1,6 @@
 # Bill of Materials (BOM)
 
-This Bill of Materials lists the core and optional components required to assemble a fully operational **Tengu Marauder Vanguard** platform.
+This Bill of Materials lists the core and optional components required to assemble a fully operational **Tengu Marauder Stryker** platform.
 
 !!! note
     Prices and availability vary by supplier. All links are examples — verify specs before ordering.

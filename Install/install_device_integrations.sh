@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
-# TMV Device Integration Toolkit
-# Tengu Marauder Vanguard — Workshop SD Card Image
+# TMS Device Integration Toolkit
+# Tengu Marauder Stryker — Workshop SD Card Image
 #
 # Installs support tooling for companion hardware:
 #   - ESP32 Marauder / Bruce firmware (esptool, PlatformIO, pyserial)
@@ -14,7 +14,7 @@
 # =============================================================================
 set -euo pipefail
 
-LOG_FILE="/var/log/tmv_device_integrations_install.log"
+LOG_FILE="/var/log/tms_device_integrations_install.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 export DEBIAN_FRONTEND=noninteractive
@@ -26,7 +26,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 echo "============================================="
-echo " TMV Device Integration Toolkit — Install"
+echo " TMS Device Integration Toolkit — Install"
 echo "============================================="
 echo "[*] Log: $LOG_FILE"
 echo
@@ -55,17 +55,17 @@ apt-get install -y --no-install-recommends \
 
 # ── ESP32 Python venv (esptool + PlatformIO + pyserial) ───────────────────────
 echo "[*] Setting up ESP32 tools venv..."
-mkdir -p /opt/tmv/integrations/esp32/tools
-python3 -m venv /opt/tmv/integrations/esp32/tools/venv
+mkdir -p /opt/tms/integrations/esp32/tools
+python3 -m venv /opt/tms/integrations/esp32/tools/venv
 
 # shellcheck source=/dev/null
-source /opt/tmv/integrations/esp32/tools/venv/bin/activate
+source /opt/tms/integrations/esp32/tools/venv/bin/activate
 pip install --upgrade pip
 pip install esptool pyserial platformio
 deactivate
 
 # Symlink esptool into PATH for convenience
-ESP_TOOL="/opt/tmv/integrations/esp32/tools/venv/bin/esptool.py"
+ESP_TOOL="/opt/tms/integrations/esp32/tools/venv/bin/esptool.py"
 if [[ -f "$ESP_TOOL" ]]; then
     ln -sf "$ESP_TOOL" /usr/local/bin/esptool.py
     echo "[+] esptool.py → /usr/local/bin/esptool.py"
@@ -73,10 +73,10 @@ fi
 
 # ── ESP32 firmware & board directories ───────────────────────────────────────
 echo "[*] Creating ESP32 firmware directories..."
-mkdir -p /opt/tmv/integrations/esp32/{firmware,manifests,boards}
+mkdir -p /opt/tms/integrations/esp32/{firmware,manifests,boards}
 
 # Board manifest template — operators fill in per-device details
-cat > /opt/tmv/integrations/esp32/manifests/boards.json << 'EOF'
+cat > /opt/tms/integrations/esp32/manifests/boards.json << 'EOF'
 {
   "boards": [
     {
@@ -109,7 +109,7 @@ EOF
 
 # ── Flipper Zero — udev rules + support notes ─────────────────────────────────
 echo "[*] Setting up Flipper Zero udev rules..."
-mkdir -p /opt/tmv/integrations/flipper/{udev,docs}
+mkdir -p /opt/tms/integrations/flipper/{udev,docs}
 
 # Official Flipper udev rule — grants non-root access to Flipper serial/DFU
 cat > /etc/udev/rules.d/42-flipper.rules << 'EOF'
@@ -127,10 +127,10 @@ udevadm trigger
 
 echo "[+] Flipper udev rules installed → /etc/udev/rules.d/42-flipper.rules"
 echo "[~] qFlipper AppImage: download from the official Flipper Zero release page."
-echo "    Install to /opt/tmv/integrations/flipper/ and chmod +x the AppImage."
+echo "    Install to /opt/tms/integrations/flipper/ and chmod +x the AppImage."
 echo "    Ensure user is in 'plugdev' group: usermod -aG plugdev \$USER"
 
-cat > /opt/tmv/integrations/flipper/docs/README.txt << 'EOF'
+cat > /opt/tms/integrations/flipper/docs/README.txt << 'EOF'
 Flipper Zero Integration Notes
 ===============================
 
@@ -139,7 +139,7 @@ udev rules: /etc/udev/rules.d/42-flipper.rules
 
 qFlipper:
   Download the Linux ARM AppImage from the official Flipper Zero releases.
-  Place it in /opt/tmv/integrations/flipper/
+  Place it in /opt/tms/integrations/flipper/
   Make it executable: chmod +x qFlipper-*.AppImage
   Run: ./qFlipper-*.AppImage
 
@@ -173,13 +173,13 @@ else
     echo "    Install manually: sudo apt install gnuradio"
 fi
 
-mkdir -p /opt/tmv/integrations/hackrf/{captures,notes}
+mkdir -p /opt/tms/integrations/hackrf/{captures,notes}
 
 # ── Bruce firmware support directory ─────────────────────────────────────────
 echo "[*] Creating Bruce firmware support directories..."
-mkdir -p /opt/tmv/integrations/bruce/{firmware,profiles,notes}
+mkdir -p /opt/tms/integrations/bruce/{firmware,profiles,notes}
 
-cat > /opt/tmv/integrations/bruce/notes/README.txt << 'EOF'
+cat > /opt/tms/integrations/bruce/notes/README.txt << 'EOF'
 Bruce Firmware Integration Notes
 ==================================
 
@@ -192,16 +192,16 @@ Supported devices (examples):
   TTGO T-Wrist
 
 Flashing with esptool:
-  source /opt/tmv/integrations/esp32/tools/venv/bin/activate
+  source /opt/tms/integrations/esp32/tools/venv/bin/activate
   esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 \
-    write_flash -z 0x0 /opt/tmv/integrations/bruce/firmware/bruce.bin
+    write_flash -z 0x0 /opt/tms/integrations/bruce/firmware/bruce.bin
 
 Serial console (after flash):
   screen /dev/ttyUSB0 115200
   or: minicom -D /dev/ttyUSB0 -b 115200
 
 PlatformIO build (from source):
-  source /opt/tmv/integrations/esp32/tools/venv/bin/activate
+  source /opt/tms/integrations/esp32/tools/venv/bin/activate
   cd <bruce-source-directory>
   pio run -e m5stack-stickc-plus --target upload
 
@@ -210,23 +210,23 @@ EOF
 
 # ── ESP32 Marauder support directory ─────────────────────────────────────────
 echo "[*] Creating ESP32 Marauder support directories..."
-mkdir -p /opt/tmv/integrations/marauder/{firmware,profiles,notes}
+mkdir -p /opt/tms/integrations/marauder/{firmware,profiles,notes}
 
-cat > /opt/tmv/integrations/marauder/notes/README.txt << 'EOF'
+cat > /opt/tms/integrations/marauder/notes/README.txt << 'EOF'
 ESP32 Marauder Integration Notes
 ==================================
 
 ESP32 Marauder is a Wi-Fi/BLE scanning tool for ESP32 devices.
 
 Flashing with esptool:
-  source /opt/tmv/integrations/esp32/tools/venv/bin/activate
+  source /opt/tms/integrations/esp32/tools/venv/bin/activate
   esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 115200 \
-    write_flash -z 0x0 /opt/tmv/integrations/marauder/firmware/marauder.bin
+    write_flash -z 0x0 /opt/tms/integrations/marauder/firmware/marauder.bin
 
 Serial access (Marauder CLI):
   screen /dev/ttyUSB0 115200
 
-Common commands (from TMV web console):
+Common commands (from TMS web console):
   scanap      — scan for access points
   scansta     — scan for stations
   stopscan    — stop active scan
@@ -272,21 +272,21 @@ apt-get clean
 rm -rf /var/lib/apt/lists/*
 
 # ── Package manifest ──────────────────────────────────────────────────────────
-mkdir -p /opt/tmv/reports
+mkdir -p /opt/tms/reports
 dpkg-query -W -f='${binary:Package}\t${Version}\n' | sort \
-    > /opt/tmv/reports/device-integrations-packages.tsv
+    > /opt/tms/reports/device-integrations-packages.tsv
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo
 echo "============================================="
-echo " TMV Device Integration Toolkit — DONE"
+echo " TMS Device Integration Toolkit — DONE"
 echo "============================================="
 echo "[+] Log:          $LOG_FILE"
-echo "[+] ESP32 venv:   /opt/tmv/integrations/esp32/tools/venv"
-echo "[+] Board config: /opt/tmv/integrations/esp32/manifests/boards.json"
-echo "[+] Bruce notes:  /opt/tmv/integrations/bruce/notes/README.txt"
-echo "[+] Marauder:     /opt/tmv/integrations/marauder/notes/README.txt"
-echo "[+] Flipper:      /opt/tmv/integrations/flipper/docs/README.txt"
+echo "[+] ESP32 venv:   /opt/tms/integrations/esp32/tools/venv"
+echo "[+] Board config: /opt/tms/integrations/esp32/manifests/boards.json"
+echo "[+] Bruce notes:  /opt/tms/integrations/bruce/notes/README.txt"
+echo "[+] Marauder:     /opt/tms/integrations/marauder/notes/README.txt"
+echo "[+] Flipper:      /opt/tms/integrations/flipper/docs/README.txt"
 echo
 echo "[+] Quick checks:"
 echo "    esptool.py version"

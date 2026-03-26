@@ -1,8 +1,8 @@
-site_name: Tengu Marauder Vanguard
+site_name: Tengu Marauder Stryker
 site_description: Offensive/defensive robotics control stack with Wi-Fi tooling and ROS2 integration
-site_url: https://exmachinaparlor.github.io/Tengu-Marauder-Vanguard
-repo_url: https://github.com/ExMachinaParlor/Tengu-Marauder-Vanguard
-repo_name: ExMachinaParlor/Tengu-Marauder-Vanguard
+site_url: https://exmachinaparlor.github.io/Tengu-Marauder-Stryker
+repo_url: https://github.com/ExMachinaParlor/Tengu-Marauder-Stryker
+repo_name: ExMachinaParlor/Tengu-Marauder-Stryker
 edit_uri: edit/main/docs/
 copyright: © Ex Machina Parlor
 

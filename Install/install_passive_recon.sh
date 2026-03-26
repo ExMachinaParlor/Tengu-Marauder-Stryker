@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
-# TMV Passive Recon Toolkit
-# Tengu Marauder Vanguard — Workshop SD Card Image
+# TMS Passive Recon Toolkit
+# Tengu Marauder Stryker — Workshop SD Card Image
 #
 # Installs tools that OBSERVE wireless signals and networks only.
 # No packet injection. Safe to run on workshop demo images.
@@ -11,7 +11,7 @@
 # =============================================================================
 set -euo pipefail
 
-LOG_FILE="/var/log/tmv_passive_recon_install.log"
+LOG_FILE="/var/log/tms_passive_recon_install.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 export DEBIAN_FRONTEND=noninteractive
@@ -23,7 +23,7 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 echo "============================================="
-echo " TMV Passive Recon Toolkit — Install"
+echo " TMS Passive Recon Toolkit — Install"
 echo "============================================="
 echo "[*] Log: $LOG_FILE"
 echo
@@ -135,24 +135,24 @@ rm -rf /var/lib/apt/lists/*
 echo "[*] Enabling gpsd..."
 systemctl enable gpsd || true
 
-# ── Create TMV directories ────────────────────────────────────────────────────
-echo "[*] Creating TMV data directories..."
-mkdir -p /opt/tmv/{pcaps,logs,reports}
-mkdir -p /opt/tmv/pcaps/"$(date +%F)"
-mkdir -p /opt/tmv/logs/"$(date +%F)"
+# ── Create TMS directories ────────────────────────────────────────────────────
+echo "[*] Creating TMS data directories..."
+mkdir -p /opt/tms/{pcaps,logs,reports}
+mkdir -p /opt/tms/pcaps/"$(date +%F)"
+mkdir -p /opt/tms/logs/"$(date +%F)"
 
 # ── Package manifest ──────────────────────────────────────────────────────────
 dpkg-query -W -f='${binary:Package}\t${Version}\n' | sort \
-    > /opt/tmv/reports/passive-recon-packages.tsv
+    > /opt/tms/reports/passive-recon-packages.tsv
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo
 echo "============================================="
-echo " TMV Passive Recon Toolkit — DONE"
+echo " TMS Passive Recon Toolkit — DONE"
 echo "============================================="
 echo "[+] Log:    $LOG_FILE"
-echo "[+] Pcaps:  /opt/tmv/pcaps/$(date +%F)"
-echo "[+] Logs:   /opt/tmv/logs/$(date +%F)"
+echo "[+] Pcaps:  /opt/tms/pcaps/$(date +%F)"
+echo "[+] Logs:   /opt/tms/logs/$(date +%F)"
 echo
 echo "[+] Quick checks:"
 echo "    iw dev"
