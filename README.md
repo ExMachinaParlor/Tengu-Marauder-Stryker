@@ -1,9 +1,9 @@
-# Tengu Marauder Vanguard
+# Tengu Marauder Stryker
 
 A mobile cyber-physical platform combining robot drive control, live camera, ESP32 Marauder integration, and passive wireless recon tools — packaged as a single Docker container designed for workshop demos, CTF events, and security research.
 
 <p align="center">
-  <img src="./Images/Tengu-Marauder-Stryker.gif" alt="Tengu Marauder Vanguard">
+  <img src="./Images/Tengu-Marauder-Stryker.gif" alt="Tengu Marauder Stryker">
 </p>
 
 > Hardware info and assembly guide: [hackaday.io/project/197212](https://hackaday.io/project/197212-tengu-maraduer)
@@ -38,8 +38,8 @@ docker compose version
 The container runs as a non-root user. Hardware access (motors, GPIO, camera, serial) requires your Pi user to be in the correct OS groups. Run the setup script once to configure groups, udev rules, and generate the `.env` file automatically:
 
 ```bash
-git clone https://github.com/ExMachinaParlor/Tengu-Marauder-Vanguard.git
-cd Tengu-Marauder-Vanguard
+git clone https://github.com/ExMachinaParlor/Tengu-Marauder-Stryker.git
+cd Tengu-Marauder-Stryker
 sudo bash Install/install_host_permissions.sh
 ```
 
@@ -48,23 +48,23 @@ Then **log out and back in** (or reboot) for group membership to take effect. Th
 ### 3. Build and run
 
 ```bash
-chmod +x tmv-start.sh
-./tmv-start.sh
+chmod +x tms-start.sh
+./tms-start.sh
 ```
 
 Open `http://<pi-ip>:5000` in a browser on the same network.
 
 Find your Pi's IP with: `hostname -I`
 
-#### Why `tmv-start.sh` instead of `docker compose up`?
+#### Why `tms-start.sh` instead of `docker compose up`?
 
-Docker refuses to start if any device listed in `compose.yaml` doesn't exist on the host (e.g. camera not plugged in, ESP32 not connected). `tmv-start.sh` detects which devices are actually present and only maps those, so the container starts cleanly regardless of what hardware is connected at that moment. If a device disappears between detection and Docker startup (race condition), the script automatically retries without it.
+Docker refuses to start if any device listed in `compose.yaml` doesn't exist on the host (e.g. camera not plugged in, ESP32 not connected). `tms-start.sh` detects which devices are actually present and only maps those, so the container starts cleanly regardless of what hardware is connected at that moment. If a device disappears between detection and Docker startup (race condition), the script automatically retries without it.
 
 ```bash
-./tmv-start.sh            # start (detached)
-./tmv-start.sh --logs     # start and follow logs
-./tmv-start.sh --stop     # stop the container
-./tmv-start.sh --rebuild  # rebuild image then start
+./tms-start.sh            # start (detached)
+./tms-start.sh --logs     # start and follow logs
+./tms-start.sh --stop     # stop the container
+./tms-start.sh --rebuild  # rebuild image then start
 ```
 
 ### Optional: Bluetooth hardware
@@ -176,7 +176,7 @@ Hardware is only accessed through service modules in `Control/services/`. The Fl
 ## Project Structure
 
 ```
-Tengu-Marauder-Vanguard/
+Tengu-Marauder-Stryker/
 ├── Control/
 │   ├── operatorcontrol.py      Flask entry point — routes only
 │   ├── hardware/
@@ -274,9 +274,9 @@ docker compose build && docker compose up -d
 docker compose logs -f
 
 # Shell into running container
-docker compose exec tmv bash
+docker compose exec tms bash
 
 # Remove container and image
 docker compose down
-docker rmi exmachinaparlor/tengu-marauder-vanguard:local
+docker rmi exmachinaparlor/tengu-marauder-stryker:local
 ```
