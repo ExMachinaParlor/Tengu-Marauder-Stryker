@@ -10,3 +10,4 @@ RPi.GPIO==0.7.1
 smbus2==0.5.0
 gpiozero
 lgpio
+cryptography
