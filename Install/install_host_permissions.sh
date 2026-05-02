@@ -162,15 +162,18 @@ sed 's/^/      /' "$ENV_FILE"
 
 echo
 
-# ── 6. Verify robot_hat host access (quick sanity check) ──────────────────────
+# ── 6. Verify FusionHat+ host access (quick sanity check) ────────────────────
+# NOTE: On Ubuntu 24.04, I2C must be enabled first:
+#   Add  dtparam=i2c_arm=on  to /boot/firmware/config.txt and reboot.
 
-echo "[*] Checking I2C bus for Robot HAT (address 0x14 / 0x74)..."
+echo "[*] Checking I2C bus for FusionHat+ ..."
 if command -v i2cdetect > /dev/null 2>&1 && [ -e /dev/i2c-1 ]; then
-  i2cdetect -y 1 2>/dev/null | grep -E "14|74" && \
-    echo "  [+] Robot HAT PCA9685 detected on I2C bus 1" || \
-    echo "  [~] No known HAT address found — hat may not be connected"
+  i2cdetect -y 1 2>/dev/null && \
+    echo "  [+] I2C bus 1 responsive — FusionHat+ should be reachable" || \
+    echo "  [~] I2C scan returned no devices — hat may not be connected"
 else
-  echo "  [~] i2cdetect not available or /dev/i2c-1 absent — skipping"
+  echo "  [~] i2cdetect not available or /dev/i2c-1 absent"
+  echo "  [~] On Ubuntu 24.04: add 'dtparam=i2c_arm=on' to /boot/firmware/config.txt and reboot"
 fi
 
 echo

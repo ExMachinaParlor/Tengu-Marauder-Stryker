@@ -77,6 +77,165 @@ If your Pi has Bluetooth and `/dev/hci0` exists, uncomment this line in `compose
 
 ---
 
+## Ubuntu 24.04 on Raspberry Pi 5 (USB boot)
+
+This section covers everything needed to go from a blank USB drive to a running TMS instance on a Raspberry Pi 5 running Ubuntu 24.04 Server. Follow steps in order — each one is a hard dependency for the next.
+
+### 1. Flash and boot Ubuntu 24.04 Server
+
+Use [Raspberry Pi Imager](https://www.raspberrypi.com/software/) and select:
+
+- **OS:** Other general-purpose OS → Ubuntu → Ubuntu Server 24.04 LTS (64-bit)
+- **Storage:** your USB drive (SSD recommended — flash drives will be slow)
+
+In the imager's advanced settings (gear icon), configure your hostname, SSH key, username, and WiFi credentials before writing. This avoids needing a monitor for first boot.
+
+Boot the Pi 5 with the USB drive connected. SSH in once it's up:
+
+```bash
+ssh ubuntu@<pi-ip>
+```
+
+> Find the IP from your router's DHCP table, or connect a monitor and run `hostname -I`.
+
+### 2. Enable I2C
+
+Ubuntu does not enable I2C by default. The FusionHat+ motor controller requires it.
+
+```bash
+sudo nano /boot/firmware/config.txt
+```
+
+Add this line at the bottom:
+
+```
+dtparam=i2c_arm=on
+```
+
+Save and reboot:
+
+```bash
+sudo reboot
+```
+
+After reboot, verify the bus is up:
+
+```bash
+ls /dev/i2c-*
+# Expected: /dev/i2c-1
+```
+
+### 3. Install the FusionHat+ kernel driver
+
+The `fusion_hat` Python library communicates with the HAT through a kernel module that must be compiled against your running kernel. This is a one-time step.
+
+```bash
+# Install kernel headers for your exact running kernel
+sudo apt update
+sudo apt install -y git python3-pip linux-headers-$(uname -r)
+
+# Clone and install the FusionHat+ library (driver + Python package)
+git clone https://github.com/ExMachinaParlor/fusion-hat.git
+cd fusion-hat
+sudo python3 install.py
+cd ..
+```
+
+Verify the driver loaded:
+
+```bash
+ls /sys/class/fusion_hat/
+# Expected: fusion_hat/
+```
+
+If `linux-headers-$(uname -r)` returns "not found", try `sudo apt install linux-raspi-headers-*` or run `sudo apt upgrade` to sync your kernel to the latest available headers package, then reboot and retry.
+
+### 4. Release WiFi interfaces from NetworkManager
+
+Ubuntu uses NetworkManager by default. It will claim WiFi adapters and block `iw scan`, `arp-scan`, and monitor mode. Tell NM to leave your wireless interface alone:
+
+```bash
+# Check your interface name (commonly wlan0 or wlp2s0)
+ip link show
+
+# Release it from NetworkManager
+sudo nmcli device set wlan0 managed no
+```
+
+To make this permanent across reboots, create `/etc/NetworkManager/conf.d/tms-unmanaged.conf`:
+
+```bash
+sudo tee /etc/NetworkManager/conf.d/tms-unmanaged.conf << 'EOF'
+[keyfile]
+unmanaged-devices=interface-name:wlan0
+EOF
+sudo systemctl reload NetworkManager
+```
+
+Replace `wlan0` with your actual interface name if different.
+
+### 5. Install Docker
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+sudo usermod -aG docker $USER
+newgrp docker
+
+sudo systemctl enable docker
+```
+
+### 6. Clone the repo and configure host permissions
+
+```bash
+git clone https://github.com/ExMachinaParlor/Tengu-Marauder-Stryker.git
+cd Tengu-Marauder-Stryker
+
+# Creates hardware groups, udev rules, and generates .env with correct GIDs
+sudo bash Install/install_host_permissions.sh
+```
+
+Log out and back in (or reboot) for group membership to take effect:
+
+```bash
+sudo reboot
+```
+
+### 7. Build and run
+
+```bash
+cd Tengu-Marauder-Stryker
+chmod +x tms-start.sh
+./tms-start.sh --rebuild
+```
+
+Open `http://<pi-ip>:5000` in a browser on the same network.
+
+### 8. Run the test suite (optional but recommended)
+
+Before trusting live hardware, verify the services are wired correctly:
+
+```bash
+python3 Tests/run_tests.py -v
+```
+
+All tests run without hardware present. A passing suite confirms motor port assignments, command whitelist, API routing, and watchdog timing are correct before you put the robot on the floor.
+
+### Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `/dev/i2c-1` missing | I2C not enabled | Add `dtparam=i2c_arm=on` to `/boot/firmware/config.txt` and reboot |
+| Motors don't move, drive shows "offline" | FusionHat+ driver not loaded | Re-run `sudo python3 fusion-hat/install.py` after installing `linux-headers-$(uname -r)` |
+| `iw scan` fails or returns no networks | NetworkManager holding interface | `sudo nmcli device set wlan0 managed no` |
+| Container fails to start | Missing `.env` or wrong GIDs | Re-run `sudo bash Install/install_host_permissions.sh` |
+| `rtl-433` not found during Docker build | universe repo not enabled | The Dockerfile now handles this — rebuild with `./tms-start.sh --rebuild` |
+| SSH times out on first boot | Pi still booting from USB, or wrong IP | Wait 60–90 s; check router DHCP table for the Pi's IP |
+| `fusion_hat` sysfs path missing after reboot | Kernel module not set to auto-load | Run `sudo python3 fusion-hat/install.py` again — it adds the module to `/etc/modules` |
+
+---
+
 ## Operator Console
 
 The web UI exposes four panels:
@@ -197,7 +356,7 @@ Tengu-Marauder-Stryker/
 │   ├── install_passive_recon.sh    Kismet, nmap, tshark, gpsd, bluez…
 │   ├── install_active_wireless.sh  Aircrack-ng, hcxdumptool, Bettercap…
 │   └── install_device_integrations.sh  esptool, PlatformIO, Flipper udev
-├── Tests/                      Motor test scripts
+├── Tests/                      unittest suite (drive, marauder, scanner, status, API)
 ├── VPN/                        WireGuard + hidden AP setup
 ├── Dockerfile                  Multi-stage, non-root, hardened
 ├── compose.yaml                NET_ADMIN/NET_RAW, no privileged mode
@@ -247,8 +406,8 @@ python3 Control/operatorcontrol.py
 
 | Component | Purpose | Suggested Part |
 |---|---|---|
-| **Raspberry Pi 4 (4–8 GB)** | Host controller — Flask, Docker, recon tools | [raspberrypi.com](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/) |
-| **MicroSD Card (32–64 GB)** | OS + software storage | [SanDisk Ultra 64 GB](https://www.amazon.com/SanDisk-Ultra-microSDXC-UHS-I-Adapter/dp/B08GY9NYRM) |
+| **Raspberry Pi 5 (4–8 GB)** | Host controller — Flask, Docker, recon tools | [raspberrypi.com](https://www.raspberrypi.com/products/raspberry-pi-5/) |
+| **USB SSD (64–256 GB)** | OS + software storage — faster than SD for sustained Docker I/O | USB 3.0 SSD in a USB-A enclosure |
 | **ESP32 Dev Board** | Wi-Fi scanning via Marauder firmware | [ESP32 WROOM DevKit](https://www.amazon.com/ESP32-DevKitC-V4-WROOM-32D-Bluetooth/dp/B08D5ZD528) |
 | **ESP32 Marauder Firmware** | Offensive Wi-Fi toolkit for ESP32 | [github.com/justcallmekoko/ESP32Marauder](https://github.com/justcallmekoko/ESP32Marauder) |
 | **USB Camera (UVC)** | Live camera feed | [Logitech C270](https://www.amazon.com/Logitech-Widescreen-Calling-Recording-Desktop/dp/B004FHO5Y6) |

@@ -42,6 +42,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR ${APP_HOME}
 
+# Enable universe repo (required for rtl-433 and netdiscover on Ubuntu)
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common \
+    && add-apt-repository universe \
+    && rm -rf /var/lib/apt/lists/*
+
 # Runtime-only system libraries (no compilers)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     i2c-tools \
