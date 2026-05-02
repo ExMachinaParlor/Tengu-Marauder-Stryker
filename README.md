@@ -151,7 +151,7 @@ graph TD
     end
 
     subgraph Hardware ["Hardware / OS"]
-        Motors["DC Motors\nRobot HAT  i²c/PWM"]
+        Motors["DC Motors\nFusionHat+  i²c/PWM"]
         ESP32["ESP32 Marauder\nSerial  /dev/ttyACM0"]
         Recon["iw · nmap · arp-scan\nbluez · rtl_433 · gpsd"]
         Sys["psutil · /proc · /sys"]
@@ -180,7 +180,7 @@ Tengu-Marauder-Stryker/
 ├── Control/
 │   ├── operatorcontrol.py      Flask entry point — routes only
 │   ├── hardware/
-│   │   └── robot_hat_bridge.py HAT import with graceful fallback
+│   │   └── robot_hat_bridge.py FusionHat+ import with graceful fallback
 │   ├── services/
 │   │   ├── drive.py            Motor control + 3s watchdog
 │   │   ├── marauder.py         ESP32 serial + command whitelist
@@ -193,7 +193,7 @@ Tengu-Marauder-Stryker/
 │   └── static/
 │       └── app.js              Fetch-based JS (no framework)
 ├── Install/
-│   ├── robot_hat_install.sh        Robot HAT library
+│   ├── robot_hat_install.sh        FusionHat+ library
 │   ├── install_passive_recon.sh    Kismet, nmap, tshark, gpsd, bluez…
 │   ├── install_active_wireless.sh  Aircrack-ng, hcxdumptool, Bettercap…
 │   └── install_device_integrations.sh  esptool, PlatformIO, Flipper udev
@@ -230,8 +230,8 @@ Script 2 installs: Aircrack-ng suite, hcxdumptool/hcxtools, Reaver/Pixiewps, mdk
 ## Manual Setup (no Docker)
 
 ```bash
-git clone https://github.com/ExMachinaParlor/robot-hat.git
-cd robot-hat && sudo python3 install.py
+git clone https://github.com/ExMachinaParlor/fusion-hat.git
+cd fusion-hat && sudo python3 install.py
 cd ..
 
 python3 -m venv venv
@@ -252,7 +252,7 @@ python3 Control/operatorcontrol.py
 | **ESP32 Dev Board** | Wi-Fi scanning via Marauder firmware | [ESP32 WROOM DevKit](https://www.amazon.com/ESP32-DevKitC-V4-WROOM-32D-Bluetooth/dp/B08D5ZD528) |
 | **ESP32 Marauder Firmware** | Offensive Wi-Fi toolkit for ESP32 | [github.com/justcallmekoko/ESP32Marauder](https://github.com/justcallmekoko/ESP32Marauder) |
 | **USB Camera (UVC)** | Live camera feed | [Logitech C270](https://www.amazon.com/Logitech-Widescreen-Calling-Recording-Desktop/dp/B004FHO5Y6) |
-| **Robot HAT (SunFounder)** | Motor PWM + GPIO control | [sunfounder.com](https://www.sunfounder.com/products/robot-hat) |
+| **FusionHat+ (SunFounder)** | Motor PWM + I²C control | [github.com/ExMachinaParlor/fusion-hat](https://github.com/ExMachinaParlor/fusion-hat) |
 | **DC Motors + Wheels** | Drive system | [TT Motors Kit](https://www.amazon.com/HiLetgo-65mm-Plastic-Smart-Robot/dp/B00HJ6ACY2) |
 | **Chassis** | Mount for all components | [Printables model](https://www.printables.com/model/1395179-tengu-marauder-vanguard) |
 | **LiPo Battery (7.4V 2S)** | Mobile power | [Zeee 7.4V 2S](https://www.amazon.com/Zeee-Battery-Airplane-Helicopter-Quadcopter/dp/B07CZZZ3J9) |

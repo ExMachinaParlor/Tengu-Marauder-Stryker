@@ -24,10 +24,10 @@ COPY requirements.txt ./
 RUN python -m pip install --upgrade pip setuptools wheel && \
     pip wheel --wheel-dir /wheels -r requirements.txt
 
-# robot_hat is not on PyPI — install from source into the wheels directory
-RUN git clone --depth=1 https://github.com/ExMachinaParlor/robot-hat.git /tmp/robot-hat && \
-    pip wheel --wheel-dir /wheels /tmp/robot-hat && \
-    rm -rf /tmp/robot-hat
+# fusion_hat is not on PyPI — install from source into the wheels directory
+RUN git clone --depth=1 https://github.com/ExMachinaParlor/fusion-hat.git /tmp/fusion-hat && \
+    pip wheel --wheel-dir /wheels /tmp/fusion-hat && \
+    rm -rf /tmp/fusion-hat
 
 
 # ── Stage 2: runtime image ────────────────────────────────────────────────────
@@ -77,42 +77,6 @@ RUN groupadd --system --gid 10001 app && \
 COPY --from=builder /wheels /wheels
 COPY --chown=app:app requirements.txt ./
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
-
-# Patch robot_hat __init__.py to make optional modules (audio, TTS) non-fatal.
-# robot_hat imports pyaudio/TTS at package level; we don't need them for motor control.
-RUN <<EOF python3
-import pathlib, glob
-for init in glob.glob('/usr/local/lib/python*/site-packages/robot_hat/__init__.py'):
-    p = pathlib.Path(init)
-    lines = p.read_text().splitlines()
-    output = []
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith('from .') and ' import ' in stripped:
-            syms_part = stripped.split(' import ', 1)[1]
-            syms = [s.strip() for s in syms_part.split(',')]
-            output.append('try:')
-            output.append(f'    {stripped}')
-            output.append('except Exception:')
-            added = False
-            for sym in syms:
-                alias = sym.split(' as ')[-1].strip() if ' as ' in sym else sym.strip()
-                if alias != '*':  # wildcard imports have no fallback variable
-                    output.append(f'    {alias} = None')
-                    added = True
-            if not added:
-                output.append('    pass')  # wildcard-only: except needs a body
-        else:
-            output.append(line)
-    txt = '\n'.join(output) + '\n'
-    # Also wrap the Devices() instantiation which reads /proc/device-tree at runtime
-    txt = txt.replace(
-        '__device__ = Devices()',
-        'try:\n    __device__ = Devices()\nexcept Exception:\n    __device__ = None'
-    )
-    p.write_text(txt)
-    print(f'Patched {init}')
-EOF
 
 # Copy application source after dependencies for better layer caching
 COPY --chown=app:app . ${APP_HOME}

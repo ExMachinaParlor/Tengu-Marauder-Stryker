@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Clone the repository
-git clone https://github.com/ExMachinaParlor/robot-hat.git
+git clone https://github.com/ExMachinaParlor/fusion-hat.git
 
 # Navigate into the directory
-cd robot-hat || { echo "Failed to enter directory"; exit 1; }
+cd fusion-hat || { echo "Failed to enter directory"; exit 1; }
 
 # Run the install script
 sudo python3 install.py
