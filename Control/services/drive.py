@@ -7,7 +7,10 @@ robot running indefinitely.
 
 Motor wiring note (SunFounder FusionHat+):
   Right motor — FusionHat port M0 (PWM channels P11/P10)
-  Left motor  — FusionHat port M1 (PWM channels P9/P8) (physically inverted)
+  Left motor  — FusionHat port M3 (PWM channels P4/P5)  (physically inverted)
+
+M0 and M3 are the outermost ports on the FusionHat+ motor header, giving the
+cleanest wire routing to wheels on opposite sides of the chassis.
 
 Because the left motor is mounted facing the opposite direction, its
 power value must be negated relative to the right motor to achieve
@@ -27,7 +30,7 @@ log = logging.getLogger(__name__)
 
 WATCHDOG_TIMEOUT = 3.0  # seconds before motors auto-stop
 MOTOR_RIGHT = "M0"
-MOTOR_LEFT  = "M1"
+MOTOR_LEFT  = "M3"
 
 
 class DriveService:
